@@ -7,10 +7,10 @@ export default () => (
     style={{
       background: 'none',
     }}
-    subTitle="Sorry, the server is reporting an error."
+    subTitle="Galat pada jaringan"
     extra={
       <Link to="/">
-        <Button type="primary">Back Home</Button>
+        <Button type="primary">Kembali ke Halaman awal</Button>
       </Link>
     }
   />

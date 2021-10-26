@@ -1,8 +1,4 @@
-import {
-  LockOutlined,
-  MobileOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, message, Tabs } from 'antd';
 import React, { useState } from 'react';
 import ProForm, { ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
@@ -52,25 +48,25 @@ const Login = () => {
     setSubmitting(true);
 
     try {
-      // 登录
+      // Login
       const msg = await login({ ...values, type });
 
       if (msg.status === 'ok') {
         const defaultloginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
-          defaultMessage: '登录成功！',
+          defaultMessage: 'Login Berhasil, Selamat Datang',
         });
         message.success(defaultloginSuccessMessage);
         await fetchUserInfo();
         goto();
         return;
-      } // 如果失败去设置用户错误信息
+      } // If it fails to set user error message
 
       setUserLoginState(msg);
     } catch (error) {
       const defaultloginFailureMessage = intl.formatMessage({
         id: 'pages.login.failure',
-        defaultMessage: '登录失败，请重试！',
+        defaultMessage: 'Login gagal, pastikan username dan password benar',
       });
       message.error(defaultloginFailureMessage);
     }
@@ -108,7 +104,7 @@ const Login = () => {
               searchConfig: {
                 submitText: intl.formatMessage({
                   id: 'pages.login.submit',
-                  defaultMessage: '登录',
+                  defaultMessage: 'Login',
                 }),
               },
               render: (_, dom) => dom.pop(),
@@ -129,17 +125,16 @@ const Login = () => {
                 key="account"
                 tab={intl.formatMessage({
                   id: 'pages.login.accountLogin.tab',
-                  defaultMessage: '账户密码登录',
+                  defaultMessage: 'Account password login',
                 })}
               />
-              
             </Tabs>
 
             {status === 'error' && loginType === 'account' && (
               <LoginMessage
                 content={intl.formatMessage({
                   id: 'pages.login.accountLogin.errorMessage',
-                  defaultMessage: '账户或密码错误（admin/ant.design)',
+                  defaultMessage: 'Username atau Password salah',
                 })}
               />
             )}
@@ -153,7 +148,7 @@ const Login = () => {
                   }}
                   placeholder={intl.formatMessage({
                     id: 'pages.login.username.placeholder',
-                    defaultMessage: '用户名: admin or user',
+                    defaultMessage: 'username',
                   })}
                   rules={[
                     {
@@ -161,7 +156,7 @@ const Login = () => {
                       message: (
                         <FormattedMessage
                           id="pages.login.username.required"
-                          defaultMessage="请输入用户名!"
+                          defaultMessage="masukkan username"
                         />
                       ),
                     },
@@ -175,7 +170,7 @@ const Login = () => {
                   }}
                   placeholder={intl.formatMessage({
                     id: 'pages.login.password.placeholder',
-                    defaultMessage: '密码: ant.design',
+                    defaultMessage: 'Password',
                   })}
                   rules={[
                     {
@@ -183,7 +178,7 @@ const Login = () => {
                       message: (
                         <FormattedMessage
                           id="pages.login.password.required"
-                          defaultMessage="请输入密码！"
+                          defaultMessage="Masukkan password"
                         />
                       ),
                     },
@@ -192,7 +187,9 @@ const Login = () => {
               </>
             )}
 
-            {status === 'error' && loginType === 'mobile' && <LoginMessage content="验证码错误" />}
+            {status === 'error' && loginType === 'mobile' && (
+              <LoginMessage content="Kode Verifikasi Error" />
+            )}
             {type === 'mobile' && (
               <>
                 <ProFormText
@@ -203,7 +200,7 @@ const Login = () => {
                   name="mobile"
                   placeholder={intl.formatMessage({
                     id: 'pages.login.phoneNumber.placeholder',
-                    defaultMessage: '手机号',
+                    defaultMessage: 'nomor telepon',
                   })}
                   rules={[
                     {
@@ -211,7 +208,7 @@ const Login = () => {
                       message: (
                         <FormattedMessage
                           id="pages.login.phoneNumber.required"
-                          defaultMessage="请输入手机号！"
+                          defaultMessage="nomor telepon dibutuhkan"
                         />
                       ),
                     },
@@ -220,7 +217,7 @@ const Login = () => {
                       message: (
                         <FormattedMessage
                           id="pages.login.phoneNumber.invalid"
-                          defaultMessage="手机号格式错误！"
+                          defaultMessage="Nomor telepon salah！"
                         />
                       ),
                     },
@@ -236,19 +233,19 @@ const Login = () => {
                   }}
                   placeholder={intl.formatMessage({
                     id: 'pages.login.captcha.placeholder',
-                    defaultMessage: '请输入验证码',
+                    defaultMessage: 'masukkan kode verifikasi',
                   })}
                   captchaTextRender={(timing, count) => {
                     if (timing) {
                       return `${count} ${intl.formatMessage({
                         id: 'pages.getCaptchaSecondText',
-                        defaultMessage: '获取验证码',
+                        defaultMessage: 'dapatkan kode verifikasi',
                       })}`;
                     }
 
                     return intl.formatMessage({
                       id: 'pages.login.phoneLogin.getVerificationCode',
-                      defaultMessage: '获取验证码',
+                      defaultMessage: 'dapatkan kode verifikasi',
                     });
                   }}
                   name="captcha"
@@ -258,7 +255,7 @@ const Login = () => {
                       message: (
                         <FormattedMessage
                           id="pages.login.captcha.required"
-                          defaultMessage="请输入验证码！"
+                          defaultMessage="masukkan kode verifikasi"
                         />
                       ),
                     },
@@ -272,7 +269,9 @@ const Login = () => {
                       return;
                     }
 
-                    message.success('获取验证码成功！验证码为：1234');
+                    message.success(
+                      'Get the verification code successfully! The verification code is: 1234 ',
+                    );
                   }}
                 />
               </>
@@ -283,14 +282,14 @@ const Login = () => {
               }}
             >
               <ProFormCheckbox noStyle name="autoLogin">
-                <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录" />
+                <FormattedMessage id="pages.login.rememberMe" defaultMessage="Auto Login" />
               </ProFormCheckbox>
               <a
                 style={{
                   float: 'right',
                 }}
               >
-                <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
+                <FormattedMessage id="pages.login.forgotPassword" defaultMessage="Lupa Password" />
               </a>
             </div>
           </ProForm>

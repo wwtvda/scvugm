@@ -7,7 +7,7 @@ export default () => (
     style={{
       background: 'none',
     }}
-    subTitle="Sorry, you don't have access to this page."
+    subTitle="Mohon maaf, anda tidak memiliki akses ke halaman ini"
     extra={
       <Link to="/">
         <Button type="primary">Back to home</Button>

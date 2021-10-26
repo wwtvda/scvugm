@@ -6,10 +6,10 @@ const NoFoundPage = () => (
   <Result
     status="404"
     title="404"
-    subTitle="Sorry, the page you visited does not exist."
+    subTitle="Mohon maaf, Halaman yang anda cari tidak tersedia."
     extra={
       <Button type="primary" onClick={() => history.push('/')}>
-        Back Home
+        Kembali
       </Button>
     }
   />

@@ -40,7 +40,7 @@ export default {
     }
 
     res.send({
-      name: 'Serati Ma',
+      name: 'Caroline Hapsari',
       avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
       userid: '00000001',
       email: 'antdesign@alipay.com',

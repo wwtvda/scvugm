@@ -7,10 +7,10 @@ export default () => (
     style={{
       background: 'none',
     }}
-    subTitle="Sorry, the page you visited does not exist."
+    subTitle="Mohon maaf, Halaman yang anda cari tidak tersedia."
     extra={
       <Link to="/">
-        <Button type="primary">Back Home</Button>
+        <Button type="primary">Kembali ke halaman awal</Button>
       </Link>
     }
   />
