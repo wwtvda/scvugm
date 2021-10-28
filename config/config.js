@@ -86,6 +86,12 @@ export default defineConfig({
           path: '/dashboard/workplace',
           component: './dashboard/workplace',
         },
+        {
+          name: 'Peta Covid Jogja',
+          icon: 'smile',
+          path: '/dashboard/jogmap',
+          component: './dashboard/jogmap',
+        },
       ],
     },
     {

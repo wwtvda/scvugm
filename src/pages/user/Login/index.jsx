@@ -1,5 +1,5 @@
 import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
-import { Alert, message, Tabs } from 'antd';
+import { Alert, message, Tabs, Modal, Button, Space} from 'antd';
 import React, { useState } from 'react';
 import ProForm, { ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { useIntl, Link, history, FormattedMessage, SelectLang, useModel } from 'umi';
@@ -19,6 +19,23 @@ const LoginMessage = ({ content }) => (
   />
 );
 /** 此方法会跳转到 redirect 参数所在的位置 */
+
+
+function info() {
+  Modal.info({
+    title: 'Lupa Password?',
+    content: (
+      <div>
+        <p>
+          Mohon untuk menghubungi Sekretariat Satgas Covid-19 UGM melalui nomor Whatsapp di bawah ini.
+        </p>
+        <Button href='http://wa.me/6281578067776?text=Halo,%20saya%20lupa%20password%20akun%20sistem%20satgas%20saya'>Klik disini</Button>
+      </div>
+    ),
+    onOk() {},
+  });
+}
+
 
 const goto = () => {
   if (!history) return;
@@ -282,15 +299,16 @@ const Login = () => {
               }}
             >
               <ProFormCheckbox noStyle name="autoLogin">
-                <FormattedMessage id="pages.login.rememberMe" defaultMessage="Auto Login" />
+                <FormattedMessage id="pages.login.rememberMe" defaultMessage="Ingat saya" />
               </ProFormCheckbox>
-              <a
-                style={{
-                  float: 'right',
-                }}
-              >
-                <FormattedMessage id="pages.login.forgotPassword" defaultMessage="Lupa Password" />
-              </a>
+                <a
+                  style={{
+                    float: 'right',
+                  }}
+                  onClick={info}
+                >
+                  <FormattedMessage id="pages.login.forgotPassword" defaultMessage="Lupa Password" />
+                </a>
             </div>
           </ProForm>
         </div>
