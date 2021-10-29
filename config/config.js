@@ -95,6 +95,46 @@ export default defineConfig({
       ],
     },
     {
+      path: '/patient',
+      icon: 'medicineBox',
+      name: 'Suspek Covid-19',
+      routes: [
+        {
+          component: './patient',
+        },
+      ],
+    },
+    {
+      path: '/isola',
+      icon: 'home',
+      name: 'Rumah Isolasi Baciro',
+      routes: [
+        {
+          component: './isola',
+        },
+      ],
+    },
+    {
+      path: '/trace',
+      icon: 'build',
+      name: 'Tracing Suspek Covid-19',
+      routes: [
+        {
+          component: './trace',
+        },
+      ],
+    },
+    {
+      path: '/vacc',
+      icon: 'experiment',
+      name: 'Kegiatan Vaksinasi UGM',
+      routes: [
+        {
+          component: './vacc',
+        },
+      ],
+    },
+    {
       path: '/form',
       icon: 'form',
       name: 'form',

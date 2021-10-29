@@ -7,9 +7,9 @@ const Settings = {
   fixedHeader: false,
   fixSiderbar: true,
   colorWeak: false,
-  title: 'Ant Design Pro',
+  title: 'Satgas Covid-19 UGM',
   pwa: false,
-  logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
+  logo: 'http://etd.repository.ugm.ac.id//ugmfw-assets/ugm-html/assets/images/ugm_header.png',
   iconfontUrl: '',
 };
 export default Settings;
