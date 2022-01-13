@@ -25,6 +25,7 @@
     <link rel="icon" href="<%= context.config.publicPath +'favicon.ico'%>" type="image/x-icon" />
   </head>
   <body>
+    <script type=”text/javascript” src=”https://public.tableau.com/javascripts/api/tableau-2.min.js"></script>
     <noscript>Out-of-the-box mid-stage front/design solution!</noscript>
     <div id="root">
       <style>
@@ -200,11 +201,9 @@
         </div>
         <div style="display: flex; align-items: center; justify-content: center">
           <img
-            src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
-            width="32"
-            style="margin-right: 8px"
+            src="<%= context.config.publicPath +'hugm.png'%>"
+            width="420"
           />
-          Ant Design
         </div>
       </div>
     </div>

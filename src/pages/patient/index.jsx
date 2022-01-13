@@ -1,246 +1,347 @@
-import React, { useState } from 'react';
-import { DownOutlined, PlusOutlined } from '@ant-design/icons';
-import {
-  Avatar,
-  Button,
-  Card,
-  Col,
-  Dropdown,
-  Input,
-  List,
-  Menu,
-  Modal,
-  Progress,
-  Radio,
-  Row,
-} from 'antd';
-import { PageContainer } from '@ant-design/pro-layout';
-import { useRequest } from 'umi';
-import moment from 'moment';
-import OperationModal from './components/OperationModal';
-import { addFakeList, queryFakeList, removeFakeList, updateFakeList } from './service';
-import styles from './style.less';
-const RadioButton = Radio.Button;
-const RadioGroup = Radio.Group;
-const { Search } = Input;
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, message, Input, Drawer } from 'antd';
+import React, { useState, useRef } from 'react';
+import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
+import ProTable from '@ant-design/pro-table';
+import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
+import ProDescriptions from '@ant-design/pro-descriptions';
+import UpdateForm from './components/UpdateForm';
+import { rule, addRule, updateRule, removeRule } from './service';
 
-const Info = ({ title, value, bordered }) => (
-  <div className={styles.headerInfo}>
-    <span>{title}</span>
-    <p>{value}</p>
-    {bordered && <em />}
-  </div>
-);
+/**
+ * Add Node
+ *
+ * @param fields
+ */
 
-const ListContent = ({ data: { owner, createdAt, percent, status } }) => (
-  <div className={styles.listContent}>
-    <div className={styles.listContentItem}>
-      <span>Owner</span>
-      <p>{owner}</p>
-    </div>
-    <div className={styles.listContentItem}>
-      <span>开始时间</span>
-      <p>{moment(createdAt).format('YYYY-MM-DD HH:mm')}</p>
-    </div>
-    <div className={styles.listContentItem}>
-      <Progress
-        percent={percent}
-        status={status}
-        strokeWidth={6}
-        style={{
-          width: 180,
-        }}
-      />
-    </div>
-  </div>
-);
+const handleAdd = async (fields) => {
+  const hide = message.loading('Menambahkan data');
 
-export const BasicList = () => {
-  const [done, setDone] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const [current, setCurrent] = useState(undefined);
-  const {
-    data: listData,
-    loading,
-    mutate,
-  } = useRequest(() => {
-    return queryFakeList({
-      count: 50,
+  try {
+    await addRule({ ...fields });
+    hide();
+    message.success('Data berhasil ditambahkan');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('Data gagal ditambahkan, silahkan coba lagi');
+    return false;
+  }
+};
+/**
+ * Update Node
+ *
+ * @param fields
+ */
+
+const handleUpdate = async (fields) => {
+  const hide = message.loading('Merubah data');
+
+  try {
+    await updateRule({
+      name: fields.name,
+      desc: fields.desc,
+      key: fields.key,
     });
-  });
-  const { run: postRun } = useRequest(
-    (method, params) => {
-      if (method === 'remove') {
-        return removeFakeList(params);
-      }
+    hide();
+    message.success('Data berhasil diubah');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('Data gagal diubah, silahkan coba lagi');
+    return false;
+  }
+};
+/**
+ * Delete node
+ *
+ * @param selectedRows
+ */
 
-      if (method === 'update') {
-        return updateFakeList(params);
-      }
+const handleRemove = async (selectedRows) => {
+  const hide = message.loading('Menghapus data');
+  if (!selectedRows) return true;
 
-      return addFakeList(params);
-    },
+  try {
+    await removeRule({
+      key: selectedRows.map((row) => row.key),
+    });
+    hide();
+    message.success('Data berhasil dihapus');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('Data gagal dihapus, silahkan coba lagi');
+    return false;
+  }
+};
+
+const TableList = () => {
+  /** New Window Popup */
+  const [createModalVisible, handleModalVisible] = useState(false);
+  /** Popup for distribution update window */
+
+  const [updateModalVisible, handleUpdateModalVisible] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
+  const actionRef = useRef();
+  const [currentRow, setCurrentRow] = useState();
+  const [selectedRowsState, setSelectedRows] = useState([]);
+  /** Configuration */
+
+  const columns = [
     {
-      manual: true,
-      onSuccess: (result) => {
-        mutate(result);
+      title: 'Nama Pasien',
+      dataIndex: 'name',
+      sorter: true,
+      render: (dom, entity) => {
+        return (
+          <a
+            onClick={() => {
+              setCurrentRow(entity);
+              setShowDetail(true);
+            }}
+          >
+            {dom}
+          </a>
+        );
       },
     },
-  );
-  const list = listData?.list || [];
-  const paginationProps = {
-    showSizeChanger: true,
-    showQuickJumper: true,
-    pageSize: 5,
-    total: list.length,
-  };
+    {
+      title: 'NIK',
+      dataIndex: 'idnumber',
+      valueType: 'number',
+    },
+    {
+      title: 'Nomor Telepon',
+      dataIndex: 'callNo',
+      hideInForm: true,
+      renderText: (val) => `${val}万`,
+    },
+    {
+      title: 'Jenis Kelamin',
+      dataIndex: 'jk',
+      valueEnum: {
+        0: {
+          text: 'Laki-laki',
+          status: 'male',
+        },
+        1: {
+          text: 'Perempuan',
+          status: 'Female',
+        },
+      },
+    },
+    {
+      title: 'Status Epidemiologi',
+      dataIndex: 'status',
+      valueEnum: {
+        0: {
+          text: 'Suspek',
+          status: 'Suspek',
+        },
+        1: {
+          text: 'Probable',
+          status: 'Probable',
+        },
+        2: {
+          text: 'Konfirmasi',
+          status: 'Konfirmasi',
+        },
+        3: {
+          text: 'Kontak Erat',
+          status: 'Kontak Erat',
+        },
+        4: {
+          text: 'Pelaku Perjalanan',
+          status: 'Pelaku Perjalanan',
+        },
+        5: {
+          text: 'Discarded',
+          status: 'Discarded',
+        },
+        6: {
+          text: 'Selesai Isolasi',
+          status: 'Selesai Isolasi',
+        },
+        7: {
+          text: 'Meninggal',
+          status: 'Meninggak',
+        }
+      },
+    },
+    {
+      title: 'Tanggal Onset',
+      sorter: true,
+      dataIndex: 'onsetDate',
+      valueType: 'date',
+      renderFormItem: (item, { defaultRender, ...rest }, form) => {
+        const status = form.getFieldValue('status');
 
-  const showEditModal = (item) => {
-    setVisible(true);
-    setCurrent(item);
-  };
+        if (`${status}` === '0') {
+          return false;
+        }
 
-  const deleteItem = (id) => {
-    postRun('remove', {
-      id,
-    });
-  };
+        if (`${status}` === '3') {
+          return <Input {...rest} placeholder="请输入异常原因！" />;
+        }
 
-  const editAndDelete = (key, currentItem) => {
-    if (key === 'edit') showEditModal(currentItem);
-    else if (key === 'delete') {
-      Modal.confirm({
-        title: '删除任务',
-        content: '确定删除该任务吗？',
-        okText: '确认',
-        cancelText: '取消',
-        onOk: () => deleteItem(currentItem.id),
-      });
-    }
-  };
-
-  const extraContent = (
-    <div className={styles.extraContent}>
-      <RadioGroup defaultValue="all">
-        <RadioButton value="all">全部</RadioButton>
-        <RadioButton value="progress">进行中</RadioButton>
-        <RadioButton value="waiting">等待中</RadioButton>
-      </RadioGroup>
-      <Search className={styles.extraContentSearch} placeholder="请输入" onSearch={() => ({})} />
-    </div>
-  );
-
-  const MoreBtn = ({ item }) => (
-    <Dropdown
-      overlay={
-        <Menu onClick={({ key }) => editAndDelete(key, item)}>
-          <Menu.Item key="edit">编辑</Menu.Item>
-          <Menu.Item key="delete">删除</Menu.Item>
-        </Menu>
-      }
-    >
-      <a>
-        更多 <DownOutlined />
-      </a>
-    </Dropdown>
-  );
-
-  const handleDone = () => {
-    setDone(false);
-    setVisible(false);
-    setCurrent({});
-  };
-
-  const handleSubmit = (values) => {
-    setDone(true);
-    const method = values?.id ? 'update' : 'add';
-    postRun(method, values);
-  };
-
+        return defaultRender(item);
+      },
+    },
+    {
+      title: 'Konfigurasi',
+      dataIndex: 'option',
+      valueType: 'option',
+      render: (_, record) => [
+        <a
+          key="config"
+          onClick={() => {
+            handleUpdateModalVisible(true);
+            setCurrentRow(record);
+          }}
+        >
+          Edit data
+        </a>,
+        <a key="subscribeAlert" href="https://procomponents.ant.design/">
+          订阅警报
+        </a>,
+      ],
+    },
+  ];
   return (
-    <div>
-      <PageContainer>
-        <div className={styles.standardList}>
-          <Card bordered={false}>
-            <Row>
-              <Col sm={8} xs={24}>
-                <Info title="我的待办" value="8个任务" bordered />
-              </Col>
-              <Col sm={8} xs={24}>
-                <Info title="本周任务平均处理时间" value="32分钟" bordered />
-              </Col>
-              <Col sm={8} xs={24}>
-                <Info title="本周完成任务数" value="24个任务" />
-              </Col>
-            </Row>
-          </Card>
-
-          <Card
-            className={styles.listCard}
-            bordered={false}
-            title="基本列表"
-            style={{
-              marginTop: 24,
-            }}
-            bodyStyle={{
-              padding: '0 32px 40px 32px',
-            }}
-            extra={extraContent}
-          >
-            <List
-              size="large"
-              rowKey="id"
-              loading={loading}
-              pagination={paginationProps}
-              dataSource={list}
-              renderItem={(item) => (
-                <List.Item
-                  actions={[
-                    <a
-                      key="edit"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        showEditModal(item);
-                      }}
-                    >
-                      编辑
-                    </a>,
-                    <MoreBtn key="more" item={item} />,
-                  ]}
-                >
-                  <List.Item.Meta
-                    avatar={<Avatar src={item.logo} shape="square" size="large" />}
-                    title={<a href={item.href}>{item.title}</a>}
-                    description={item.subDescription}
-                  />
-                  <ListContent data={item} />
-                </List.Item>
-              )}
-            />
-          </Card>
-        </div>
-      </PageContainer>
-      <Button
-        type="dashed"
-        onClick={() => {
-          setVisible(true);
+    <PageContainer>
+      <ProTable
+        headerTitle="Data Pasien Positif Covid-19"
+        actionRef={actionRef}
+        rowKey="key"
+        search={{
+          labelWidth: 120,
         }}
-        style={{
-          width: '100%',
-          marginBottom: 8,
+        toolBarRender={() => [
+          <Button
+            type="primary"
+            key="primary"
+            onClick={() => {
+              handleModalVisible(true);
+            }}
+          >
+            <PlusOutlined /> Tambah Pasien
+          </Button>,
+        ]}
+        request={rule}
+        columns={columns}
+        rowSelection={{
+          onChange: (_, selectedRows) => {
+            setSelectedRows(selectedRows);
+          },
+        }}
+      />
+      {selectedRowsState?.length > 0 && (
+        <FooterToolbar
+          extra={
+            <div>
+              已选择{' '}
+              <a
+                style={{
+                  fontWeight: 600,
+                }}
+              >
+                {selectedRowsState.length}
+              </a>{' '}
+              项 &nbsp;&nbsp;
+              <span>
+                服务调用次数总计 {selectedRowsState.reduce((pre, item) => pre + item.callNo, 0)} 万
+              </span>
+            </div>
+          }
+        >
+          <Button
+            onClick={async () => {
+              await handleRemove(selectedRowsState);
+              setSelectedRows([]);
+              actionRef.current?.reloadAndRest?.();
+            }}
+          >
+            批量删除
+          </Button>
+          <Button type="primary">批量审批</Button>
+        </FooterToolbar>
+      )}
+      <ModalForm
+        title="新建规则"
+        width="400px"
+        visible={createModalVisible}
+        onVisibleChange={handleModalVisible}
+        onFinish={async (value) => {
+          const success = await handleAdd(value);
+
+          if (success) {
+            handleModalVisible(false);
+
+            if (actionRef.current) {
+              actionRef.current.reload();
+            }
+          }
         }}
       >
-        <PlusOutlined />
-        添加
-      </Button>
-      <OperationModal
-        done={done}
-        visible={visible}
-        current={current}
-        onDone={handleDone}
-        onSubmit={handleSubmit}
+        <ProFormText
+          rules={[
+            {
+              required: true,
+              message: '规则名称为必填项',
+            },
+          ]}
+          width="md"
+          name="name"
+        />
+        <ProFormTextArea width="md" name="desc" />
+      </ModalForm>
+      <UpdateForm
+        onSubmit={async (value) => {
+          const success = await handleUpdate(value);
+
+          if (success) {
+            handleUpdateModalVisible(false);
+            setCurrentRow(undefined);
+
+            if (actionRef.current) {
+              actionRef.current.reload();
+            }
+          }
+        }}
+        onCancel={() => {
+          handleUpdateModalVisible(false);
+          setCurrentRow(undefined);
+        }}
+        updateModalVisible={updateModalVisible}
+        values={currentRow || {}}
       />
-    </div>
+
+      <Drawer
+        width={1000}
+        visible={showDetail}
+        onClose={() => {
+          setCurrentRow(undefined);
+          setShowDetail(false);
+        }}
+        closable={false}
+      >
+        {currentRow?.name && (
+          <ProDescriptions
+            column={2}
+            title={currentRow?.name}
+            request={async () => ({
+              data: currentRow || {},
+            })}
+            params={{
+              id: currentRow?.name,
+            }}
+            columns={columns}
+          />
+        )}
+      </Drawer>
+    </PageContainer>
   );
 };
-export default BasicList;
+
+export default TableList;
